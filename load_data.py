@@ -16,20 +16,22 @@ def load_data(filename, training=True):
     flight_date = data['flight_date'].to_numpy()
     
     if training: 
-        is_claim   = data['is_claim'].to_numpy().reshape(-1,1)
+        is_claim = data['is_claim'].to_numpy().reshape(-1,1)
     else:        
-        flight_id  = data['flight_id'].to_numpy()
+        flight_id = data['flight_id'].to_numpy()
     
     N = data.shape[0]
 
+    year         = np.full(N, np.nan, dtype=int)
     month        = np.full(N, np.nan, dtype=int)
+    day_of_month = np.full(N, np.nan, dtype=int)
     day_of_week  = np.full(N, np.nan, dtype=int)
     carrier      = np.full(N, '', dtype='S2')
     
     for i in range(N):
 
         this_date = map(int, flight_date[i].split('-'))
-        month[i] = this_date[1]
+        year[i], month[i], day_of_month[i] = this_date
         day_of_week[i] = datetime.date(*this_date).weekday()    ## Monday=0, ..., Sunday=6
 
         carrier[i] = flight_code[i][:2]     ## doing this because there are some flights whose "Airline" entry is NULL
@@ -38,17 +40,17 @@ def load_data(filename, training=True):
     le, ohe = LabelEncoder(), OneHotEncoder(categories='auto')
     encode = lambda x : ohe.fit_transform(le.fit_transform(x).reshape(-1,1)).toarray()
     
-    month       = encode(month)
-    week        = encode(week)
-    day_of_week = encode(day_of_week)
-    std_hour    = encode(std_hour)
-    carrier     = encode(carrier)
-    destination = encode(destination)
+    year         = encode(year)
+    month        = encode(month)
+    day_of_month = encode(day_of_month)
+    day_of_week  = encode(day_of_week)
+    std_hour     = encode(std_hour)
+    carrier      = encode(carrier)
+    destination  = encode(destination)
 
-    nn_input = np.concatenate((month.T, week.T, day_of_week.T, std_hour.T, carrier.T, destination.T)).T
+    nn_input = np.concatenate((year.T, month.T, day_of_month.T, day_of_week.T, std_hour.T, carrier.T, destination.T)).T
 
     print('input shape: {}'.format(nn_input.shape))
 
     if training: return nn_input, is_claim
     else:        return nn_input, flight_id
-

@@ -62,7 +62,7 @@ def start(train_data, test_data, resume=False, testing=True):
             if last_lossf > lossf: 
                 nn.save_weights()
                 np.save('state/state.npy', [i, lossf, nn.learning_rate])
-                nn.learning_rate = min(1.01*nn.learning_rate, 1)
+                nn.learning_rate = min(1.01*nn.learning_rate, 1.6e-4)
             else:
                 nn.learning_rate /= 1.005
 
@@ -112,14 +112,15 @@ if __name__ == '__main__':
     nn_input, is_claim = load_data('flight_delays_data.csv')
 
     ## Resuming?
-    resuming = True
+    resuming = False
     k_in_progress = 1
 
     ## For scikit-learn k-fold cross-validation
     from sklearn.model_selection import KFold
+    import sys
 
     ## Split data into training and validation sets
-    kfold = KFold(n_splits=max(2,int(sys.argv[1])), shuffle=True, random_state=0)
+    kfold = KFold(n_splits=max(int(sys.argv[1]), 2), shuffle=True, random_state=0)
 
     k = 1
     data = np.concatenate((nn_input.T, is_claim.T)).T

@@ -11,7 +11,7 @@ class NeuralNetwork:
         
         self.n1 = 400                   ## number of neurons in first hidden layer
         self.n2 = 250                   ## number of neurons in second hidden layer
-        self.learning_rate = 5e-5       ## initial learning rate (back propagation step size)
+        self.learning_rate = 3e-5       ## initial learning rate (back propagation step size)
         
         self.weights0 = np.random.normal(0, 0.1, (self.input.shape[1], self.n1))
         self.weights1 = np.random.normal(0, 0.1, (self.n1, self.n2))
