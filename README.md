@@ -8,7 +8,7 @@ are generic. The artificial neural network is set to initialize to two layers, w
 400 neurons in the first hidden layer and 250 neurons in the second hidden layer.
 This neural network architecture is configured to work with 
 [flight delays data](https://drive.google.com/a/terminal1.co/file/d/1AkEc76q6NbqEojk3BQJEfbx-RIigDCve/), 
-which [```load_data.py```](```load_data.py```) transforms into 385 binary input variables. 
+which [```load_data.py```](load_data.py) transforms into 385 binary input variables. 
 The neural network uses a 
 [leaky rectified linear unit](https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#Leaky_ReLUs) 
 activation function to compute the hidden layers, and a sigmoid activation function to 
