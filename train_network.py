@@ -26,7 +26,7 @@ def start(train_data, test_data, resume=False, testing=True):
         
     out = open('track_info.dat', 'a')
 
-    it = 1500
+    it = 2000
     for i in range(int(si), it):
         print('\n\niteration %d of %d\n' % (i+1, it))
         print('    layer 1:    n = %d'   % nn.n1)
@@ -56,13 +56,13 @@ def start(train_data, test_data, resume=False, testing=True):
 
         lossf = nn.loss_function()
         print('\n    loss function (training):     %.9f\n' % lossf)
-        out.write(datetime.datetime.now().strftime("%H:%M:%S %D") + ' %6s  %.6f  %e\n' % (i+1, lossf, nn.learning_rate))
+        out.write(datetime.datetime.now().strftime("%H:%M:%S %D") + ' %2s %6s  %e  %.6f' % (k, i+1, nn.learning_rate, lossf))
         
         if i > 10:
             if last_lossf > lossf: 
                 nn.save_weights()
-                nn.learning_rate = min(1.01*nn.learning_rate, 1)
                 np.save('state/state.npy', [i, lossf, nn.learning_rate])
+                nn.learning_rate = min(1.01*nn.learning_rate, 1)
             else:
                 nn.learning_rate /= 1.005
 
@@ -73,6 +73,7 @@ def start(train_data, test_data, resume=False, testing=True):
 
             test_lossf = np.mean(np.square(test_data[:,-1].reshape(-1,1) - 800*tn.output))
             print('    loss function (validation):   %.3f HKD^2 -> %.3f HKD (rms)\n' % (test_lossf, np.sqrt(test_lossf)))
+            out.write('  %.3f' % np.sqrt(test_lossf))
 
             if best_test_lossf > test_lossf:
                 best_test_lossf = test_lossf
@@ -96,7 +97,7 @@ def start(train_data, test_data, resume=False, testing=True):
         print('\nback_prop() took %dm %.2fs\n' % (te//60, te%60))
             
         last_lossf = lossf
-
+        out.write('\n')
     out.close()
 
 
@@ -112,23 +113,33 @@ if __name__ == '__main__':
 
     ## Resuming?
     resuming = True
+    k_in_progress = 1
 
     ## For scikit-learn k-fold cross-validation
     from sklearn.model_selection import KFold
 
     ## Split data into training and validation sets
-    kfold = KFold(n_splits=2, shuffle=True, random_state=0)
+    kfold = KFold(n_splits=max(2,int(sys.argv[1])), shuffle=True, random_state=0)
 
+    k = 1
     data = np.concatenate((nn_input.T, is_claim.T)).T
     for train, test in kfold.split(data):
 
-        if not resuming:
+        if resuming and k < k_in_progress:
+            k += 1
+            continue
 
+        if not resuming:
             ## Train neural network from scratch
             start(data[train], data[test])
 
         else:
-
             ## Resume training from state saved in ./state/
             start(data[train], data[test], resuming)
 
+        if not os.path.exists('state/best/fold%d'%k): os.makedirs('state/best/fold%d'%k)
+        os.system('cp -p state/best/*.npy state/best/fold%d/' % k)
+
+        ## When advancing to the next k-fold, henceforth not resuming
+        resuming = False
+        k += 1
