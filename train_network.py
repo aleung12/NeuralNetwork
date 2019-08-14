@@ -62,9 +62,9 @@ def start(train_data, test_data, resuming=False, testing=True):
                 nn.save_weights()
                 np.save('state/state.npy', [i, lossf, nn.learning_rate])
                 if i < 200: nn.learning_rate *= 1.01
-                else:       nn.learning_rate = min(1.005*nn.learning_rate, 1)
+                else:       nn.learning_rate *= 1.005
             else:
-                nn.learning_rate /= 1.005
+                nn.learning_rate /= 1.007
 
             tn = TrainedNeuralNetwork(test_data[:,:-1])
 

@@ -53,7 +53,7 @@ if __name__ == '__main__':
     try: 
         try: 
             filename = input('Enter path to flight delays data (hit Return for \'./flight_delays_data.csv\'): ')
-        except SyntaxError: 
+        except: 
             filename = 'flight_delays_data.csv'
     
         print('Loading data...')
