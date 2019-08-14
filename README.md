@@ -8,7 +8,7 @@ are generic. The artificial neural network is set to initialize to two layers, w
 400 neurons in the first hidden layer and 250 neurons in the second hidden layer.
 This neural network architecture is configured to work with 
 [flight delays data](https://drive.google.com/a/terminal1.co/file/d/1AkEc76q6NbqEojk3BQJEfbx-RIigDCve/), 
-which [```load_data.py```](load_data.py) transforms into 385 binary input variables. 
+which [```load_data.py```](load_data.py) transforms into 368 binary input variables. 
 
 The neural network uses a 
 [leaky rectified linear unit](https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#Leaky_ReLUs) 
@@ -27,9 +27,9 @@ the network is adapted to perform regression.
   python train_network.py 2
   ```
   The training data file './flight_delays_data.csv' is required. The user can specify 
-  a different file at line 112. The program defaults to starting a new training from 
-  scratch. To resume a training, modify line 115 accordingly and specify k at line 116 
-  for the k-fold cross-validation in progress.
+  a different file at line 112. The program's default behavior is to start a new training 
+  from scratch. To resume a training, modify line 115 accordingly and specify _k_ at 
+  line 116 for the _k_-fold cross-validation in progress.
 
 
 - To use a trained neural network to predict claims for delayed or cancelled flights, 
